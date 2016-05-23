@@ -17,7 +17,6 @@ describe("Worker", function() {
         expect(worker.get_service_url("freeCodeCamp","chris")).to.equal("https://www.freecodecamp.com/chris");
         expect(worker.get_service_url("BAD", "chris")).to.equal("");
     });
-    /*
     it("processes service responses", function() {
         expect(worker.get_achievements_from_response("freeCodeCamp", ">[ 9 ]<")).to.equal('9');
         expect(worker.get_achievements_from_response("freeCodeCamp", ">[ 400 ]<")).to.equal('400');
@@ -25,5 +24,4 @@ describe("Worker", function() {
         expect(worker.get_achievements_from_response("codeCombat", '[{"state":{"complete":true}}]')).to.equal(1);
         expect(worker.get_achievements_from_response("codeSchool", '{"badges":[]}')).to.equal(0);
     });
-    */
 });
