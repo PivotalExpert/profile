@@ -12,22 +12,57 @@ var say_goodbye = function (phrase) {
 
 var get_service_url = function(service, serviceID){
     var theUrl = "";
-    console.log("Checking serviceID "+serviceID+" on "+service);
+    console.log("Fetching serviceID "+serviceID+" on "+service);
     if (service == "freeCodeCamp") {
       theUrl = "https://www.freecodecamp.com/" + serviceID;
-      console.log("Using freeCodeCamp url " + theUrl);
+      //console.log("Using freeCodeCamp url " + theUrl);
     }
     else if (service == "codeCombat") {
-      console.log("Using codeCombat url");
+      //console.log("Using codeCombat url");
       theUrl = "http://codecombat.com/db/user/" + serviceID + "/level.sessions?project=state.complete,levelID,levelName";
     }
     else if (service == "codeSchool") {
-      console.log("Using codeSchool url");
+      //console.log("Using codeSchool url");
       theUrl = "https://www.codeschool.com/users/" + serviceID + ".json";
     }
     return theUrl;
 }
 
+var get_achievements_from_response = function(service, body){
+            var totalAchievements = 0;
+            if (service == "freeCodeCamp") {
+              var start = body.indexOf(">[ ");
+              var stop = body.indexOf(" ]<");
+              totalAchievements = body.substring(start + 3, stop);
+            }
+            else if (service == "codeCombat") {
+
+              var jsonObject = JSON.parse(body);
+              //Currently includes stat.complete.false levels
+              console.log("Code Combat levels = " + jsonObject.length);
+              var theCount = 0;
+              for (var i = 0; i < jsonObject.length; i++) {
+                if (jsonObject[i].state.complete == true) {
+                  theCount += 1;
+                }
+
+              }
+              console.log("Completed Code Combat levels = " + theCount);
+              totalAchievements = theCount;
+            }
+
+            else if (service == "codeSchool") {
+              var jsonObject = JSON.parse(body);
+              var badges = jsonObject['badges'];
+              console.log("Code School Badges earned " + badges.length);
+              totalAchievements = badges.length;
+
+            }
+
+            console.log("Fetched totalAchievements " + totalAchievements); // Show the HTML for homepage.
+            return totalAchievements;
+  
+}
 var ref = new Firebase('https://verifier.firebaseio.com');
 var queueRef = new Firebase('https://verifier.firebaseio.com/queue');
 /*
@@ -74,38 +109,13 @@ if (require.main === module) {
         request(theUrl, function (error, response, body) {
           console.log("requested url " + theUrl + " since the service is " + service);
           if (!error && response.statusCode == 200) {
-            var totalAchievements = 0;
-            if (service == "freeCodeCamp") {
-              var start = body.indexOf(">[ ");
-              var stop = body.indexOf(" ]<");
-              totalAchievements = body.substring(start + 3, stop);
-            }
-            else if (service == "codeCombat") {
-
-              var jsonObject = JSON.parse(body);
-              //Currently includes stat.complete.false levels
-              console.log("Code Combat levels = " + jsonObject.length);
-              var theCount = 0;
-              for (var i = 0; i < jsonObject.length; i++) {
-                if (jsonObject[i].state.complete == true) {
-                  theCount += 1;
-                }
-
-              }
-              console.log("Completed Code Combat levels = " + theCount);
-              totalAchievements = theCount;
-            }
-
-            else if (service == "codeSchool") {
-              var jsonObject = JSON.parse(body);
-              var badges = jsonObject['badges'];
-              console.log("Code School Badges earned " + badges.length);
-              totalAchievements = badges.length;
-
-            }
-
-            console.log("Fetched totalAchievements " + totalAchievements); // Show the HTML for homepage.
-
+            
+            var totalAchievements = get_achievements_from_response(service, body);
+            
+            // Refactor
+            
+            // end refactor 
+            
             data.count = totalAchievements;
             var tempAuth = data.id;
             var location = "classMentors/userAchievements/" + tempAuth + "/services/" + service;
@@ -153,7 +163,8 @@ if (require.main === module) {
   module.exports = {
     "say_hello": say_hello,
     "say_goodbye": say_goodbye,
-    "get_service_url": get_service_url
+    "get_service_url": get_service_url,
+    "get_achievements_from_response": get_achievements_from_response
   }
 
 }
