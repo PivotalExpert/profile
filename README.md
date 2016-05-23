@@ -1,4 +1,6 @@
-# Profile
+# Achievement Profile
+
+[![Build Status](https://travis-ci.org/PivotalExpert/profile.svg?branch=master)](https://travis-ci.org/PivotalExpert/profile)
 
 ## Overview
 
