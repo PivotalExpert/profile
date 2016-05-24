@@ -1,5 +1,20 @@
 var expect    = require("chai").expect;
-var worker = require("../src/worker");
+var request    = require('request')
+var sinon     = require('sinon');
+//var worker = require("../src/worker");
+
+var proxyquire   = require('proxyquire');
+var MockFirebase = require('mockfirebase').MockFirebase;
+var mock;
+// load worker with firebase references mocked. 
+var worker = proxyquire("../src/worker", {
+  firebase: function (url) {
+    return (mock = new MockFirebase(url));
+  }
+});
+//mock.flush();
+// data is logged
+
 
 describe("Worker", function() {
     it("says hello", function() {
@@ -24,4 +39,42 @@ describe("Worker", function() {
         expect(worker.get_achievements_from_response("codeCombat", '[{"state":{"complete":true}}]')).to.equal(1);
         expect(worker.get_achievements_from_response("codeSchool", '{"badges":[]}')).to.equal(0);
     });
+    
+    it("update achievements", function() {
+        var location = "classMentors/userAchievements/chris/services/codeCombat";
+        //update_achievements_and_clear_queue(location, theData, data, reject, resolve);
+        worker.update_achievements_and_clear_queue(location, {}, {}, function (data){}, function (data){});
+
+    });
+    
+     it("fetch service responses", function() {
+        //fetch_service_url(theUrl, data,service, reject, resolve)
+        //mock request before running this. 
+        //worker.fetch_service_url("http://home.com", {},"codeCombat", function (data){}, function (data){});  
+    });
+    
+});
+
+describe('Service requests', function(){
+  before(function(done){
+    sinon
+      .stub(request, 'get')
+      .yields(null, null, JSON.stringify({"foo": "bar"}));
+    done();
+  });
+
+  /*
+  after(function(done){
+    request.get.restore();
+    done();
+  });
+  */
+
+  it('can get service profile', function(done){
+    worker.fetch_service_url("http://TESTURL.COM", {},"codeCombat", function (data){}, function (data){});
+    // callback for the get request is never being called. 
+    // How do you properly include the done(): after the test has completed? 
+    done();
+   
+  });
 });

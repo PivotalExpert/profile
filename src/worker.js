@@ -76,6 +76,38 @@ ref.authWithCustomToken('<YOUR_TOKEN_HERE>', function(err, authData){
 });
 */
 
+var update_achievements_and_clear_queue = function (location, theData, data, reject, resolve) {
+  // update the profile
+  ref.child(location).set(theData, function (err) {
+    if (err) {
+      reject(err);
+    } else {
+      resolve(data);
+      ref.child('profileUpdateLog').push(data); //, function (err) {if (err){ } else {}});    
+    }
+  });
+}
+
+var fetch_service_url = function (theUrl, data,service, reject, resolve) {
+  request(theUrl, function (error, response, body) {
+    console.log("requested url " + theUrl + " since the service is " + service);
+    if (!error && response.statusCode == 200) {
+
+      var totalAchievements = get_achievements_from_response(service, body);
+
+      data.count = totalAchievements;
+      var tempAuth = data.id;
+      var location = "classMentors/userAchievements/" + tempAuth + "/services/" + service;
+      var theData = { "totalAchievements": data.count, "id": data.id };
+
+      update_achievements_and_clear_queue(location, theData, data, reject, resolve);
+    }
+    else{
+      console.log("There was an error fetching "+theUrl+" status code "+response.statusCode+ " error "+error);
+    }
+  });
+}        
+
 // Do not run the server when loading as a module. 
 if (require.main === module) {
 
@@ -83,10 +115,6 @@ if (require.main === module) {
     console.log("service " + data.service + " for user " + data.id);
     var service = data.service;
     var user = data.id;
-
-    //Add fetch code here. 
-    var wasError = false;
-    var theError = "";
 
     //Fetch the userProfile from ClassMentors
     var userProfileUrl = "https://verifier.firebaseio.com/classMentors/userProfiles/" + user + ".json";
@@ -106,55 +134,9 @@ if (require.main === module) {
         }
 
         //Fetch the service url
-        request(theUrl, function (error, response, body) {
-          console.log("requested url " + theUrl + " since the service is " + service);
-          if (!error && response.statusCode == 200) {
-            
-            var totalAchievements = get_achievements_from_response(service, body);
-            
-            // Refactor
-            
-            // end refactor 
-            
-            data.count = totalAchievements;
-            var tempAuth = data.id;
-            var location = "classMentors/userAchievements/" + tempAuth + "/services/" + service;
-            var theData = { "totalAchievements": data.count, "id": data.id };
-
-
-            // update the profile
-            ref.child(location).set(theData, function (err) {
-              if (err) {
-                theError += err;
-                wasError = true;
-                reject(err);
-              } else {
-                resolve(data);
-              }
-            });
-
-            // update the message log
-            ref.child('messages').push(data, function (err) {
-              if (err) {
-
-              } else {
-
-              }
-            });
-
-            if (wasError) {
-              reject(theError);
-            } else {
-              resolve(data);
-            }
-
-          }
-        })
-
+        fetch_service_url(theUrl, data, service, reject, resolve);
       }
-
     });
-
   });
 
   // Export modules if we aren't running the worker so that we can test functions. 
@@ -164,7 +146,9 @@ if (require.main === module) {
     "say_hello": say_hello,
     "say_goodbye": say_goodbye,
     "get_service_url": get_service_url,
-    "get_achievements_from_response": get_achievements_from_response
+    "get_achievements_from_response": get_achievements_from_response,
+    "update_achievements_and_clear_queue": update_achievements_and_clear_queue,
+    "fetch_service_url":fetch_service_url
   }
 
 }
