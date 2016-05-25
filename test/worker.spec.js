@@ -1,6 +1,6 @@
 var expect    = require("chai").expect;
 var request    = require('request')
-var sinon     = require('sinon');
+//var sinon     = require('sinon');
 //var worker = require("../src/worker");
 
 var proxyquire   = require('proxyquire');

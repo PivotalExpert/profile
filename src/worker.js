@@ -76,6 +76,7 @@ var update_profile_and_clear_task = function (err, data, reject, resolve) {
   } else {
     console.log("Successfully updated. Resolving task. " + JSON.stringify(data));
     resolve(data);
+    data["updated"] = Firebase.ServerValue.TIMESTAMP;
     ref.child('logs/profileUpdates').push(data); //, function (err) {if (err){ } else {}});    
   }
 }
