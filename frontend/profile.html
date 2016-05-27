@@ -6,6 +6,75 @@
     <script src="app.js"></script>
   </head>
   <body ng-controller="SampleCtrl">
+    <div ng-hide="user">
+        <button type="submit" ng-click="login()">Login</button>
+    </div>
+    <div ng-show="user">  
+       Hi {{profile.user.diplayName}}. (edit)
+       <button type="submit" ng-click="logout()">Logout</button>
+    </div>
+    <div ng-show="user && !user.publicId"> 
+      <form ng-submit="addNewUserProfile()">
+        Pick a unique username for ClassMentors. http://profile/<input ng-model="newProfileId" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    
+    <div ng-show="profile && !profile.services.codeCombat">
+      <form ng-submit="addCodeCombat()">
+        Enter your Code Combat username. <input ng-model="codeCombatUsername" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div ng-show="profile && profile.services.codeCombat">
+      CodeCombat profile for <a href="https://codecombat.com/user/{{profile.services.codeCombat.details.id}}" target="_blank">{{profile.services.codeCombat.details.id}}</a>
+      (edit)
+    </div>
+    <div ng-show="profile && !profile.services.freeCodeCamp">
+      <form ng-submit="addFreeCodeCamp()">
+        Enter your Free Code Camp username. <input ng-model="freeCodeCampUsername" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div ng-show="profile && profile.services.freeCodeCamp">
+      FreeCodeCamp profile for <a href="https://www.freecodecamp.com/{{profile.services.freeCodeCamp.details.id}}" target="_blank">{{profile.services.freeCodeCamp.details.id}}</a>
+      (edit)   
+    </div>
+    
+    <button type="submit" ng-click="updateAllServices()">Update All Services</button>
+    <button type="submit" ng-click="updateAllProfiles()">Update All Services for all users.</button>
+    
+   <h1>Profile Update Queue</h1>
+      <table class="table table-striped">
+      <tr>
+        <th>Id</th>
+        <th>Service</th>
+        <th>State</th>
+        <th>Progress</th>
+         <th>State Changed</th>
+      </tr>
+      <tr ng-repeat="item in updateTasks">
+        <td>
+          {{item.id}}
+        </td>
+        <td>
+            {{item.service}} 
+        </td>
+        <td>
+          {{item._state}}
+        </td>
+        <td>
+            {{item._progress}} 
+        </td>
+        <td>
+            {{item._state_changed}}
+        </td>
+        <td>
+          {{getTime()}}
+        </td>
+      </tr>
+    <table>
+
    <h1>Profile Update Logs</h1>
       <table class="table table-striped">
       <tr>
@@ -13,11 +82,11 @@
         <th>Service</th>
         <th>Service ID</th>
         <th>Achievements</th>
-         <th>Updated</th>
+         <th>Minutes Ago</th>
       </tr>
-      <tr ng-repeat="item in logs">
+      <tr ng-repeat="item in filteredLogs | orderBy:'-updated'"">
         <td>
-          {{item.user}}
+          {{$index+1}}.
         </td>
         <td>
             {{item.service}} 
@@ -28,28 +97,11 @@
         <td>
             {{item.count}} 
         </td>
-        <td>
-            {{item.updated}}
-        </td>
+        <td>*{{ timePassed(item.updated) |number:2 }}*
+          </td>
       </tr>
     <table>
-    
-   <ul>
-      <li ng-repeat="message in messages">
-        <!-- edit a message -->
-        <input ng-model="message.text" ng-change="messages.$save(message)" />
-        <!-- delete a message -->
-        <button ng-click="messages.$remove(message)">Delete Message</button>
-      </li>
-    </ul>
-    <form ng-submit="addMessage()">
-      <input ng-model="newMessageText" />
-      <button type="submit">Add Message</button>
-    </form>
-    
-        <link rel="stylesheet" href=
-  "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type=
-  "text/css" />
-  
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" />
+
   </body>
 </html>
