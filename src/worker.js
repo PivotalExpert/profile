@@ -88,14 +88,14 @@ var update_achievements_and_clear_queue = function (location, theData, data, rej
   });
 }
 
-var fetch_service_url = function (theUrl, data, service, reject, resolve, error, response, body, callback) {
+var fetch_service_url = function (theUrl, data, service, serviceID, reject, resolve, error, response, body, callback) {
   //console.log("requested url " + theUrl + " since the service is " + service);
   if (!error && response.statusCode == 200) {
 
     var totalAchievements = get_achievements_from_response(service, body);
     data.count = totalAchievements;
     var location = "classMentors/userAchievements/" + data.id + "/services/" + service;
-    var theData = { "totalAchievements": data.count, "id": data.id };
+    var theData = { "totalAchievements": data.count, "id": serviceID };
 
     callback(location, theData, data, reject, resolve);
   }
@@ -120,7 +120,7 @@ var get_profile = function (service_response_body, task_data, reject, resolve) {
     }
     //Fetch the service url
     request(theUrl, function (error, response, body) {
-      fetch_service_url(theUrl, task_data, service, reject, resolve, error, response, body, update_achievements_and_clear_queue);
+      fetch_service_url(theUrl, task_data, service, serviceID, reject, resolve, error, response, body, update_achievements_and_clear_queue);
     });
 
   }
@@ -135,7 +135,7 @@ var process_task = function (data, progress, resolve, reject) {
   //Fetch the userProfile from ClassMentors
   var userProfileUrl = "https://verifier.firebaseio.com/classMentors/userProfiles/" + user + ".json";
   request(userProfileUrl, function (error, response, body) {
-    //TODO: handle profiel fetch error. 
+    //TODO: handle profile fetch error. 
     //TODO: check that response is valid. 
     //TODO: If valid, process profile. 
     get_profile(body, data, reject, resolve);

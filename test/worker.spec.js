@@ -51,8 +51,8 @@ describe("Worker", function() {
     });
     // Need to pass in done to test that callbacks are executed.
      it('can fetch a bad service url', function () {
-        //fetch_service_url(theUrl, data,service, reject, resolve, error,response, body,success)
-        worker.fetch_service_url("http://TESTURL.COM", {}, "codeCombat", function (data) { }, function (data) { }, false, {}, "TESTING", function(){});
+        //fetch_service_url(theUrl, data,service, serviceID, reject, resolve, error,response, body,success)
+        worker.fetch_service_url("http://TESTURL.COM", {}, "codeCombat", "Prof", function (data) { }, function (data) { }, false, {}, "TESTING", function(){});
     }); 
     it('can fetch a service profile', function (done) {
         //fetch_service_url(theUrl, data,service, reject, resolve, error,response, body,success)
@@ -62,7 +62,7 @@ describe("Worker", function() {
             expect(arguments[2]['count']).to.equal(1);            
             done();
         };
-        worker.fetch_service_url("http://TESTURL.COM", {}, "codeCombat", function (data) { }, function (data) { }, false, { "statusCode": 200 }, '[{"state":{"complete":true}}]',success);
+        worker.fetch_service_url("http://TESTURL.COM", {}, "codeCombat", "Prof", function (data) { }, function (data) { }, false, { "statusCode": 200 }, '[{"state":{"complete":true}}]',success);
     });
     
     it('can update profile and clear task', function () {
