@@ -1,76 +1,148 @@
-<html>
-    <head>
-        <title>Sanitized Chat App</title>
-        <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
-        <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
-        <link rel="stylesheet" href="./main.css"></link>
-    </head>
+<html ng-app="app">
+  <head>
+    <script src="lib/angular.min.js"></script>
+    <script src="lib/firebase.js"></script>
+    <script src="lib/angularfire.min.js"></script>
+    <script src="js/app.js"></script>
+  </head>
+  <body ng-controller="SampleCtrl">
+    <div ng-hide="user">
+        <button type="submit" ng-click="login('github')">Github Login</button>
+        <button type="submit" ng-click="googleLogin()">Google Login</button>
+        
+    </div>
+    <div ng-show="user">  
+       Hi {{profile.user.diplayName}}. (edit)
+       <button type="submit" ng-click="logout()">Logout</button>
+    </div>
+    <div ng-show="user && !user.publicId"> 
+      <form ng-submit="addNewUserProfile()">
+        Pick a unique username for ClassMentors. http://profile/<input ng-model="newProfileId" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div ng-show="profile && !profile.services.codeCombat">
+      <form ng-submit="addCodeCombat()">
+        Enter your Code Combat username. <input ng-model="codeCombatUsername" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div ng-show="profile && profile.services.codeCombat">
+      {{achievements.services.codeCombat.totalAchievements}} achievements on CodeCombat as <a href="https://codecombat.com/user/{{profile.services.codeCombat.details.id}}" target="_blank">{{profile.services.codeCombat.details.id}}</a>
+      (edit)
+    </div>
+    <div ng-show="profile && !profile.services.freeCodeCamp">
+      <form ng-submit="addFreeCodeCamp()">
+        Enter your Free Code Camp username. <input ng-model="freeCodeCampUsername" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div ng-show="profile && profile.services.freeCodeCamp">
+      {{achievements.services.freeCodeCamp.totalAchievements}} achievements on FreeCodeCamp as <a href="https://www.freecodecamp.com/{{profile.services.freeCodeCamp.details.id}}" target="_blank">{{profile.services.freeCodeCamp.details.id}}</a>
+      (edit)   
+    </div>
+    <div ng-show="profile && !profile.services.codeSchool">
+      <form ng-submit="addCodeSchool()">
+        Enter your Code School username. <input ng-model="codeSchoolUsername" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div ng-show="profile && profile.services.codeSchool">
+      {{achievements.services.codeSchool.totalAchievements}} achievements on codeSchool as <a href="https://www.codeschool.com/users/{{profile.services.codeSchool.details.id}}" target="_blank">{{profile.services.codeSchool.details.id}}</a>
+      (edit)   
+    </div>
+    <button type="submit" ng-click="updateAllServices()">Update All Services</button>
+    <button type="submit" ng-click="updateAllProfiles()">Update All Services for all users.</button>
+    
+   <h1>Profile Update Queue</h1>
+      <table class="table table-striped">
+      <tr>
+        <th>Id</th>
+        <th>Service</th>
+        <th>State</th>
+        <th>Progress</th>
+         <th>State Changed</th>
+      </tr>
+      <tr ng-repeat="item in updateTasks">
+        <td>
+          {{item.id}}
+        </td>
+        <td>
+            {{item.service}} 
+        </td>
+        <td>
+          {{item._state}}
+        </td>
+        <td>
+            {{item._progress}} 
+        </td>
+        <td>
+            {{item._state_changed}}
+        </td>
+        <td>
+          {{getTime()}}
+        </td>
+      </tr>
+    <table>
 
-    <body>
-        <div id="stream">
-        	<h1>Clean Chat</h1>
-        	<input type="text" id="msgInput" placeholder="Don't be evil..."/>
-            <button type="submit" id="tweet-submit">Submit</button>
-            <div id="msg-box"></div>
-        </div>
+   <h1>Profile Update Logs</h1>
+      <table class="table table-striped">
+      <tr>
+        <th>User</th>
+        <th>Service</th>
+        <th>Service ID</th>
+        <th>Achievements</th>
+         <th>Minutes Ago</th>
+      </tr>
+      <tr ng-repeat="item in filteredLogs | orderBy:'-updated'"">
+        <td>
+          {{$index+1}}.
+        </td>
+        <td>
+            {{item.service}} 
+        </td>
+        <td>
+          {{item.id}}
+        </td>
+        <td>
+            {{item.count}} 
+        </td>
+        <td>{{ timePassed(item.updated) |number:2 }}
+          </td>
+      </tr>
+    <table>
+      
+      <h1>All Users</h1>
+      <table class="table table-striped">
+      <tr>
+        <th>Rankr</th>
+        <th>User</th>
+        <th>Total</th>
+        <th>Code Combat</th>
+        <th>Code School</th>
+         <th>Free Code Camp</th>
+      </tr>
+      <tr ng-repeat="item in allUserAchievements">
+        <td>
+          {{$index+1}}.
+        </td>
 
-        <div id="here">
-            <h1>Who's here?!<a href="#" id="login"><img style="height:auto; width:auto; max-width:32px; max-height:32px;" src="twitter_white.png"/>Sign in With Twitter</a>
-            </h1>
-        </div>
+        <td>
+            {{item.$id}} 
+        </td>
+        <td>{{item.total}}</td>
+        <td>
+          {{item.services.codeCombat.totalAchievements}}
+        </td>
+        <td>
+            {{item.services.codeSchool.totalAchievements}} 
+        </td>
+        <td>
+          {{ item.services.freeCodeCamp.totalAchievements}}
+         </td>
+      </tr>
+    <table>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" />
 
-        <script>
-        //STEP 1: Create references
-        var ref = new Firebase('https://verifier.firebaseio.com/');
-        var usersRef = ref.child('users');
-        var messagesRef = ref.child('messages');
-        var queueRef = ref.child('queue/tasks');
-
-        var currentUser = null;
-
-        //STEP 2: Authenticate on button click
-        $('#login').on('click', function () {
-            usersRef.authWithOAuthPopup('github', function (error, user) {
-                if (error) {
-                    console.log("Login failed "+error);
-                } else if (user) {
-                   usersRef.child(user.uid).set({username: user.github.username, pic: user.github.profileImageURL});
-                }
-            });
-        });
-
-        //STEP 3: Handle auth state change
-        usersRef.onAuth(function(user){
-            if (user) {
-                currentUser = user;
-            } else {
-                currentUser = null;
-            }
-        });
-
-        //STEP 4: Add user image
-        usersRef.on('child_added', function(snapshot){
-            var user = snapshot.val();
-            $("<div id='user'><img src=" + user.pic + "/><span id='username'>@" + user.username + "</span></div>").appendTo($('#here'));
-        });
-
-        //STEP 5: Store messages in Firebase
-        $('#tweet-submit').on('click', function () {
-            if (currentUser !== null) {
-            var message = $('#msgInput').val();            
-            queueRef.push({user: currentUser.uid, username: currentUser.github.username, message: message, published: new Date().getTime()});
-            $('#msgInput').val('');
-          } else {
-            alert('You must login with Twitter to post!');
-          }
-        });
-
-        //STEP 6: Add messages to DOM in realtime
-        messagesRef.on('child_added', function(snapshot){
-            var message = snapshot.val();
-            //$('#msg-box').append($("<div class='msg-text'>").text(message.username).append('<br/>').append($('<span/>').text(message.message)));
-            $('#msg-box').append($("<div class='msg-text'>").text(message.fcc_username).append('<br/>').append($('<span/>').text(message.fcc_count)));
-           });
-        </script>
-    </body>
+  </body>
 </html>
