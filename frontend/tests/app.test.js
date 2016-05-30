@@ -1,8 +1,8 @@
 
-
 describe('app', function () {
 
   beforeEach(module('app'));
+  angular.module('firebase',[]);
 
   var $controller;
 
@@ -10,14 +10,36 @@ describe('app', function () {
     $controller = _$controller_;
   }));
 
-  describe('sum', function () {
-    
-    // Any tests will fail without injecting the Firebse mock
-    //  it('1 + 1 should equal 2', function () {
-    //      expect(2).toBe(2);
-    //  });
-      
+  describe('SampleCtrl', function () {
 
-	});
+    it('getTheTime should work.', function () {
+      var $scope = {};
+      var controller = $controller('SampleCtrl', {
+        $scope: $scope,
+        $firebaseArray: function () { },
+        $firebaseObject: function () { },
+        $firebaseAuth: function () { }
+      });
+
+      expect($scope.getTheTime(1464172652971))
+        .toBe('Wed May 25 2016 18:37:32 GMT+0800 (SGT)');
+
+    });
+    
+     it('timePassed should be greater than 8000.', function () {
+      var $scope = {};
+      var controller = $controller('SampleCtrl', {
+        $scope: $scope,
+        $firebaseArray: function () { },
+        $firebaseObject: function () { },
+        $firebaseAuth: function () { }
+      });
+
+      expect($scope.timePassed(1464172652973)>7000)
+        .toBe(true);
+    });
+
+
+  });
 
 });

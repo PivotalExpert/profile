@@ -146,9 +146,6 @@
           email: authData.google.email,
           displayName: authData.google.displayName
         });
-
-
-
         $scope.fetchAuthData(authData.uid);
 
       }, {
@@ -182,7 +179,6 @@
         console.log("Authentication failed:", error);
       });
     };
-
 
 
     $scope.addProfileUpdateTask = function () {
