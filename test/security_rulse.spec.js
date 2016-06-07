@@ -38,16 +38,23 @@ describe('With current security rules', function () {
             expect(targaryen.users.unauthenticated)
                 .cannot.read.path("auth");
         });
-        // TODO: Secure workers with API key in the future. 
-        it('can write queue/tasks', function () {
-            expect(targaryen.users.unauthenticated)
-                .can.write.path("queue/tasks");
-        });
+                
         it('can write logs', function () {
             expect(targaryen.users.unauthenticated)
                 .can.write.path("logs");
         });
+             
+        var goodTask = {'service':'s1','id':'chris'};
+        it('can write to queue/tasks', function () {
+            expect(targaryen.users.unauthenticated)
+                .can.write(goodTask).path("queue/tasks");
+        });
         
+        //Only allow queue workers to read from queue once custom tokens are in place. 
+        //Add initial user account creation rules. 
+        //if first login, add initial data
+        //allow creation of publicId
+        //don't allow create of publicId if it exists already.
     });
 
     describe('Authorized users', function () {
@@ -78,9 +85,27 @@ describe('With current security rules', function () {
         it("cannot write another users' auth/users/$auth.uid", function () {
           expect(theUser).cannot.write(data).path("auth/users/github:5678"); 
         });
-        //Write your own authuser by no one elses
+        
+        it("cannot write another users' classMentors/userProfiles/$publicId", function () {
+          expect(theUser).cannot.write(data).path("classMentors/userProfiles/chris"); 
+        });
+        
+        var chrisUser = {uid: "github:116418"}; //chris
+        it("cannot write another users' classMentors/userProfiles/$publicId", function () {
+          expect(chrisUser).can.write(data).path("classMentors/userProfiles/chris"); 
+        });
+                 
+    }); 
+    
+   describe('Custom auth', function () {
+        // TODO: Secure workers with API key in the future. 
          
-    });     
- 
+       var customAuth = {uid: 'queue-worker' };
+       var data = {};
+       it("can write to classMentors/userProfiles", function () {
+          expect(customAuth).can.write(data).path("classMentors/userProfiles"); 
+       });
+        
+    });      
 
 });

@@ -3,47 +3,30 @@
     "auth": {
       "publicIds": {
         "$publicId": {
-          ".validate": "newData.isString() && newData.val().matches(/^[-:a-zA-Z0-9]+$/) && $publicId.matches(/^[-a-z0-9]{3,20}$/) && ($publicId == null || newData.parent().parent().parent().child('auth').child('publicIds').child($publicId).val() == newData.val() && newData.parent().parent().parent().child('auth').child('usedPublicIds').child($publicId).val() == true && newData.parent().parent().parent().child('auth').child('users').child(newData.val()).child('publicId').val() == $publicId)", 
           ".write": "auth != null && auth.uid == newData.val() && (newData.val() != null && data.val() == null)"
         }
       }, 
       "usedPublicIds": {
         "$publicId": {
-          ".validate": "newData.isBoolean() && newData.val() == (newData.parent().parent().parent().child('auth').child('publicIds').child($publicId).val() != null)", 
           ".write": "newData.val() != null"
         }, 
         ".read": "true"
       }, 
       "users": {
         "$userId": {
-          "$other": {
-            ".validate": "false"
-          }, 
           ".read": "auth != null && auth.uid == $userId",  
-          ".write": "newData.val() != null && (auth != null && auth.uid == $userId)", 
-          "country": {
-            "$other": {
-              ".validate": "false"
-            }, 
-            ".validate": "newData.hasChildren() && newData.hasChildren(['code', 'name']) || newData.val() == null", 
-            "code": {
-              ".validate": "newData.isString()"
-            }, 
-            "name": {
-              ".validate": "newData.isString()"
-            }
-          }, 
+          ".write": "auth != null && auth.uid == $userId",
+
           "createdAt": {
 
           }, 
           "displayName": {
-            ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 64"
+
           }, 
           "email": {
-            ".validate": "newData.isString() && newData.val().matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$/)"
-          }, 
+           }, 
           "fullName": {
-            ".validate": "newData.isString() && newData.val().length >= 3"
+            
           }, 
           "gravatar": {
 
@@ -53,33 +36,6 @@
           }, 
           "publicId": {
             ".validate": "newData.isString() && newData.val().matches(/^[-a-z0-9]{3,20}$/) || newData.val() == null"
-          }, 
-          "school": {
-            "$other": {
-              ".validate": "false"
-            }, 
-            ".validate": "newData.hasChildren() && newData.hasChildren(['id', 'name', 'type']) || newData.val() == null", 
-            "iconUrl": {
-              ".validate": "newData.isString() || newData.val() == null"
-            }, 
-            "id": {
-              ".validate": "newData.isString()"
-            }, 
-            "name": {
-              ".validate": "newData.isString()"
-            }, 
-            "type": {
-              ".validate": "newData.isString()"
-            }
-          }, 
-          "secretKey": {
-            ".validate": "newData.isString() && newData.val().length >= 16 || newData.val() == null"
-          }, 
-          "secretKeyValidUntil": {
-            ".validate": "newData.isNumber() || newData.val() == null"
-          }, 
-          "yearOfBirth": {
-            ".validate": "newData.isNumber() && newData.val() > 1900 && newData.val() < 2015 || newData.val() == null"
           }
         }
       }
@@ -91,7 +47,9 @@
             },
             "userProfiles":{
                 ".read":true,
-                ".write": true
+                "$publicId": {
+                    ".write": "auth != null && (auth.uid == 'queue-worker' || auth.uid == newData.parent().parent().parent().child('auth').child('publicIds').child($publicId).val())"
+                }
             }
         },
         "logs":{
@@ -103,6 +61,10 @@
                 ".read": true,
                 ".write": true
             }
+        },
+        "apikey":{
+            ".read":false,
+            ".write":false
         }
       }
 }

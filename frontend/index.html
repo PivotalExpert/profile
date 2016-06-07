@@ -118,9 +118,9 @@
         <th>Rankr</th>
         <th>User</th>
         <th>Total</th>
-        <th>Code Combat</th>
+        <th>Free Code Camp</th>
+        <th>Pivotal Expert</th>
         <th>Code School</th>
-         <th>Free Code Camp</th>
       </tr>
       <tr ng-repeat="item in allUserAchievements">
         <td>
@@ -132,14 +132,14 @@
         </td>
         <td>{{item.total}}</td>
         <td>
-          {{item.services.codeCombat.totalAchievements}}
-        </td>
-        <td>
-            {{item.services.codeSchool.totalAchievements}} 
-        </td>
-        <td>
           {{ item.services.freeCodeCamp.totalAchievements}}
          </td>
+        <td>
+          {{item.services.pivotalExpert.totalAchievements}}
+        </td>
+        <td>
+            {{ item.services.codeSchool.totalAchievements }} 
+        </td>
       </tr>
     <table>
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" />

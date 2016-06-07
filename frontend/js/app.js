@@ -91,7 +91,8 @@
 
           //add reverse lookup entry.
           $scope.ref.child('auth').child('publicIds').child($scope.newProfileId).set($scope.user.$id);
-
+          console.log("adding new user.");
+          console.log($scope.user);
           //create new userProfile public to everyone. 
           $scope.ref.child('classMentors').child('userProfiles')
             .child($scope.newProfileId)
