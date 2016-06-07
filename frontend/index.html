@@ -21,14 +21,14 @@
         <button type="submit">Save</button>
       </form>
     </div>
-    <div ng-show="profile && !profile.services.codeCombat">
-      <form ng-submit="addCodeCombat()">
-        Enter your Code Combat username. <input ng-model="codeCombatUsername" />
+    <div ng-show="profile && !profile.services.pivotalExpert">
+      <form ng-submit="addPivotalExpert()">
+        Enter your Pivotal Expert username. <input ng-model="pivotalExpertUsername" />
         <button type="submit">Save</button>
       </form>
     </div>
-    <div ng-show="profile && profile.services.codeCombat">
-      {{achievements.services.codeCombat.totalAchievements}} achievements on CodeCombat as <a href="https://codecombat.com/user/{{profile.services.codeCombat.details.id}}" target="_blank">{{profile.services.codeCombat.details.id}}</a>
+    <div ng-show="profile && profile.services.pivotalExpert">
+      {{achievements.services.pivotalExpert.totalAchievements}} achievements on pivotalExpert as <a href="https://pivotal-expert.firebaseapp.com/#/profile/{{profile.services.pivotalExpert.details.id}}" target="_blank">{{profile.services.pivotalExpert.details.id}}</a>
       (edit)
     </div>
     <div ng-show="profile && !profile.services.freeCodeCamp">

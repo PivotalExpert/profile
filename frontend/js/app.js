@@ -13,47 +13,47 @@
    
    // Define the controller.
    function SampleCtrl($scope, $firebaseArray, $firebaseObject, $firebaseAuth) {
-    var ref = new Firebase("https://verifier.firebaseio.com");
+    $scope.ref = new Firebase("https://verifier.firebaseio.com");
 
     // create a synchronized array
     // click on `index.html` above to see it used in the DOM!
-    $scope.logs = $firebaseArray(ref.child('logs/profileUpdates'));
+    $scope.logs = $firebaseArray($scope.ref.child('logs/profileUpdates'));
 
-    $scope.usersRef = ref.child('users');
-    $scope.updateTasks = $firebaseArray(ref.child('queue/tasks'));
+    $scope.usersRef = $scope.ref.child('users');
+    $scope.updateTasks = $firebaseArray($scope.ref.child('queue/tasks'));
 
-    var query = ref.child('logs/profileUpdates').orderByChild("updated").limitToLast(10);
+    var query = $scope.ref.child('logs/profileUpdates').orderByChild("updated").limitToLast(10);
     $scope.filteredLogs = $firebaseArray(query);
 
-    var query2 = ref.child('classMentors/userAchievements').orderByChild("updated").limitToLast(10);
+    var query2 = $scope.ref.child('classMentors/userAchievements').orderByChild("updated").limitToLast(10);
     $scope.allUserAchievements = $firebaseArray(query2);
 
     // create an instance of the authentication service
-    var auth = $firebaseAuth(ref);
+    var auth = $firebaseAuth($scope.ref);
     // login with github
-    var usersRef = ref.child('auth').child('users');
+    var usersRef = $scope.ref.child('auth').child('users');
 
 
     $scope.logout = function () {
       console.log("Logging user out.")
-      ref.unauth();
+      $scope.ref.unauth();
       $scope.user = null;
     };
 
     $scope.fetchAchievements = function (publicId) {
       console.log("Fetching achievements for " + publicId);
-      $scope.achievements = $firebaseObject(ref.child('classMentors/userAchievements/' + publicId));
+      $scope.achievements = $firebaseObject($scope.ref.child('classMentors/userAchievements/' + publicId));
     }
 
     $scope.fetchClassMentorsProfile = function (publicId) {
       console.log("Fetching publicId " + publicId);
-      $scope.profile = $firebaseObject(ref.child('classMentors/userProfiles/' + publicId));
+      $scope.profile = $firebaseObject($scope.ref.child('classMentors/userProfiles/' + publicId));
       $scope.fetchAchievements(publicId);
     }
 
     $scope.fetchAuthData = function (authId) {
       console.log("Fetching authId " + authId);
-      $scope.user = $firebaseObject(ref.child('auth/users/' + authId));
+      $scope.user = $firebaseObject($scope.ref.child('auth/users/' + authId));
       // Once auth data loads, load the user's public profile. 
       $scope.user.$loaded().then(function () {
         if ($scope.user.publicId) {
@@ -66,7 +66,7 @@
     }
 
     //Check to see if user is already logged in an fetch auth data if so
-    var authData = ref.getAuth();
+    var authData = $scope.ref.getAuth();
     if (authData) {
       console.log("User " + authData.uid + " is logged in with " + authData.provider);
       $scope.fetchAuthData(authData.uid);
@@ -79,7 +79,7 @@
       //Do as a transaction. 
       //update auth/users/<authId>
 
-      var isAvailable = $firebaseObject(ref.child('auth').child('usedPublicIds').child($scope.newProfileId));
+      var isAvailable = $firebaseObject($scope.ref.child('auth').child('usedPublicIds').child($scope.newProfileId));
       isAvailable.$loaded().then(function () {
 
         if (isAvailable.$value) {
@@ -90,10 +90,10 @@
           usersRef.child($scope.user.$id).update({ 'publicId': $scope.newProfileId });
 
           //add reverse lookup entry.
-          ref.child('auth').child('publicIds').child($scope.newProfileId).set($scope.user.$id);
+          $scope.ref.child('auth').child('publicIds').child($scope.newProfileId).set($scope.user.$id);
 
           //create new userProfile public to everyone. 
-          ref.child('classMentors').child('userProfiles')
+          $scope.ref.child('classMentors').child('userProfiles')
             .child($scope.newProfileId)
             .child('user')
             .update({
@@ -105,37 +105,37 @@
             });
 
           // mark as taken
-          ref.child('auth').child('usedPublicIds').child($scope.newProfileId).set(true);
+          $scope.ref.child('auth').child('usedPublicIds').child($scope.newProfileId).set(true);
         }
       });
     }
 
     $scope.addFreeCodeCamp = function () {
       console.log("Adding Free Code Camp.");
-      ref.child('classMentors/userProfiles').child($scope.profile.$id)
+      $scope.ref.child('classMentors/userProfiles').child($scope.profile.$id)
         .child('services/freeCodeCamp/details/id').set($scope.freeCodeCampUsername);
       //Put a link to profile
     }
 
-    $scope.addCodeCombat = function () {
+    $scope.addPivotalExpert = function () {
       console.log("Adding Code Combat.");
       //update Firebase
-      ref.child('classMentors/userProfiles').child($scope.profile.$id)
-        .child('services/codeCombat/details/id').set($scope.codeCombatUsername);
+      $scope.ref.child('classMentors/userProfiles').child($scope.profile.$id)
+        .child('services/pivotalExpert/details/id').set($scope.pivotalExpertUsername);
       //Put a link to profile. 
     }
 
     $scope.addCodeSchool = function () {
       console.log("Adding Code School.");
       //update Firebase
-      ref.child('classMentors/userProfiles').child($scope.profile.$id)
+      $scope.ref.child('classMentors/userProfiles').child($scope.profile.$id)
         .child('services/codeSchool/details/id').set($scope.codeSchoolUsername);
       //Put a link to profile. 
     }
 
     $scope.googleLogin = function () {
       console.log("here");
-      ref.authWithOAuthPopup("google", function (error, authData) {
+      $scope.ref.authWithOAuthPopup("google", function (error, authData) {
 
         console.log(authData)
         //usersRef.child(authData.uid).update(authData.google);
@@ -180,7 +180,6 @@
       });
     };
 
-
     $scope.addProfileUpdateTask = function () {
       $scope.updateTasks.$add({
         id: $scope.id,
@@ -195,8 +194,8 @@
 
     $scope.updateAllServices = function () {
       console.log("Enqueueing " + $scope.profile.$id);
-      if ($scope.profile.services && $scope.profile.services.codeCombat) {
-        $scope.updateTasks.$add({ id: $scope.profile.$id, service: "codeCombat" });
+      if ($scope.profile.services && $scope.profile.services.pivotalExpert) {
+        $scope.updateTasks.$add({ id: $scope.profile.$id, service: "pivotalExpert" });
       }
       if ($scope.profile.services && $scope.profile.services.freeCodeCamp) {
         $scope.updateTasks.$add({ id: $scope.profile.$id, service: "freeCodeCamp" });

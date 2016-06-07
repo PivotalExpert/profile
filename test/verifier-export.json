@@ -1,0 +1,190 @@
+{
+  "auth" : {
+    "publicIds" : {
+      "chris" : "github:116418",
+      "scboesch" : "google:110893970871115341770"
+    },
+    "usedPublicIds" : {
+      "chris" : true,
+      "scboesch" : true
+    },
+    "users" : {
+      "github:116418" : {
+        "displayName" : "Chris Boesch",
+        "email" : "cboesch@smu.edu.sg",
+        "pic" : "https://avatars.githubusercontent.com/u/116418?v=3",
+        "publicId" : "chris",
+        "username" : "SingaporeClouds"
+      },
+      "google:110893970871115341770" : {
+        "displayName" : "Chris Boesch",
+        "email" : "scboesch@gmail.com",
+        "pic" : "https://lh4.googleusercontent.com/-T1JGF7RGWqw/AAAAAAAAAAI/AAAAAAAAAbU/d_chmreIZe8/photo.jpg",
+        "publicId" : "scboesch"
+      }
+    }
+  },
+  "classMentors" : {
+    "userAchievements" : {
+      "chris" : {
+        "services" : {
+          "codeCombat" : {
+            "id" : "profboesch",
+            "totalAchievements" : 101
+          },
+          "codeSchool" : {
+            "id" : "chrisboesch",
+            "totalAchievements" : 18
+          },
+          "freeCodeCamp" : {
+            "id" : "singaporeclouds",
+            "totalAchievements" : "319"
+          },
+          "pivotalExpert" : {
+            "id" : "Chris",
+            "totalAchievements" : 1
+          }
+        }
+      },
+      "scboesch" : {
+        "services" : {
+          "codeCombat" : {
+            "id" : "profboesch",
+            "totalAchievements" : 101
+          },
+          "codeSchool" : {
+            "id" : "chrisboesch",
+            "totalAchievements" : 18
+          },
+          "freeCodeCamp" : {
+            "id" : "singaporeclouds",
+            "totalAchievements" : "319"
+          }
+        }
+      }
+    },
+    "userProfiles" : {
+      "chris" : {
+        "services" : {
+          "codeCombat" : {
+            "details" : {
+              "id" : "profboesch"
+            }
+          },
+          "codeSchool" : {
+            "details" : {
+              "id" : "chrisboesch"
+            }
+          },
+          "freeCodeCamp" : {
+            "details" : {
+              "id" : "singaporeclouds"
+            }
+          },
+          "pivotalExpert" : {
+            "details" : {
+              "id" : "Chris"
+            }
+          }
+        },
+        "user" : {
+          "diplayName" : "chris",
+          "pic" : "https://avatars.githubusercontent.com/u/116418?v=3"
+        }
+      },
+      "kaplejon" : {
+        "services" : {
+          "codeCombat" : {
+            "details" : {
+              "id" : "5551c835559fd68805760616"
+            }
+          },
+          "codeSchool" : {
+            "details" : {
+              "id" : "markuslendermann"
+            }
+          },
+          "freeCodeCamp" : {
+            "details" : {
+              "id" : "kaplejon"
+            }
+          }
+        }
+      },
+      "scboesch" : {
+        "services" : {
+          "codeCombat" : {
+            "details" : {
+              "id" : "profboesch"
+            }
+          },
+          "codeSchool" : {
+            "details" : {
+              "id" : "chrisboesch"
+            }
+          },
+          "freeCodeCamp" : {
+            "details" : {
+              "id" : "singaporeclouds"
+            }
+          }
+        },
+        "user" : {
+          "diplayName" : "scboesch",
+          "pic" : "https://lh4.googleusercontent.com/-T1JGF7RGWqw/AAAAAAAAAAI/AAAAAAAAAbU/d_chmreIZe8/photo.jpg"
+        }
+      },
+      "singaporeclouds" : {
+        "services" : {
+          "codeCombat" : {
+            "details" : {
+              "id" : "profboesch"
+            }
+          },
+          "codeSchool" : {
+            "details" : {
+              "id" : "ChrisBoesch"
+            }
+          },
+          "freeCodeCamp" : {
+            "details" : {
+              "id" : "singaporeclouds"
+            }
+          }
+        }
+      }
+    }
+  },
+  "logs" : {
+    "profileUpdates" : {
+      "-KIbUPYIWke7v-nDsSLZ" : {
+        "count" : "400",
+        "id" : "kaplejon",
+        "service" : "freeCodeCamp",
+        "updated" : 1464172652971
+      },
+      "-KIbUQiPFKTzQSDPI1ry" : {
+        "count" : "319",
+        "id" : "singaporeclouds",
+        "service" : "freeCodeCamp",
+        "updated" : 1464172657777
+      }
+    }
+  },
+  "queue" : {
+    "tasks" : {
+      "-KJcnwbF_qgJRx0zjcPU" : {
+        "_error_details" : {
+          "attempts" : 1,
+          "error" : "Non-supported service codeCombat",
+          "previous_state" : "in_progress"
+        },
+        "_progress" : 0,
+        "_state" : "error",
+        "_state_changed" : 1465268555778,
+        "id" : "chris",
+        "service" : "codeCombat"
+      }
+    }
+  }
+}

@@ -2,188 +2,85 @@ var chai = require('chai'),
   expect = chai.expect,
   targaryen = require('targaryen');
 
+var export_data = require('./verifier-export'); //with path
+  
+var rules = require('./../frontend/config/security-rules.json'); //with path
+
+
 chai.use(targaryen.chai);
 
-describe('A set of rules and data', function() {
+describe('With current security rules', function () {
 
-  before(function() {
+    before(function () {
+        targaryen.setFirebaseData(export_data);
+        targaryen.setFirebaseRules(rules);
 
-    // when you call setFirebaseData, you can either use the data format
-    // of `exportVal` (i.e., with ".value" and ".priority" keys) or just a plain
-    // Javascript object. The plain object will be converted to the Firebase format.
-
-      targaryen.setFirebaseData({
-          auth:{
-              "publicIds":{
-                  "cboesch":"github:116418",
-                  "sandra":"github:111111"
-              },
-              "users":{
-                  "github:116418":{
-                      "publicId":"cboesch",
-                      "isAdmin":true
-                    },
-                  "github:111111":{"publicId":"sandra"}
-              }
-         
-          },
-          
-          "classMentors": {
-              "userAchievements": {
-                  "kaplejon": {
-                      "services": {
-                          "codeCombat": {
-                              "id": "kaplejon",
-                              "totalAchievements": 5
-                          },
-                          "codeSchool": {
-                              "id": "kaplejon",
-                              "totalAchievements": 7
-                          },
-                          "freeCodeCamp": {
-                              "id": "kaplejon",
-                              "totalAchievements": "400"
-                          }
-                      }
-                  },
-                  "singaporeclouds": {
-                      "services": {
-                          "codeCombat": {
-                              "id": "singaporeclouds",
-                              "totalAchievements": 101
-                          },
-                          "codeSchool": {
-                              "id": "singaporeclouds",
-                              "totalAchievements": 18
-                          },
-                          "freeCodeCamp": {
-                              "id": "singaporeclouds",
-                              "totalAchievements": "319"
-                          }
-                      }
-                  }
-              },
-              "userProfiles": {
-                  "kaplejon": {
-                      "services": {
-                          "codeCombat": {
-                              "details": {
-                                  "id": "5551c835559fd68805760616"
-                              }
-                          },
-                          "codeSchool": {
-                              "details": {
-                                  "id": "markuslendermann"
-                              }
-                          },
-                          "freeCodeCamp": {
-                              "details": {
-                                  "id": "kaplejon"
-                              }
-                          }
-                      }
-                  },
-                  "singaporeclouds": {
-                      "services": {
-                          "codeCombat": {
-                              "details": {
-                                  "id": "profboesch"
-                              }
-                          },
-                          "codeSchool": {
-                              "details": {
-                                  "id": "ChrisBoesch"
-                              }
-                          },
-                          "freeCodeCamp": {
-                              "details": {
-                                  "id": "singaporeclouds"
-                              }
-                          }
-                      }
-                  }
-              }
-          },
-      });
-
-    // Users can write their own userProfile and read everyone's userProfiles and userAchievements
-    targaryen.setFirebaseRules({
-      rules: {
-        users: {
-          '.read': 'auth !== null',
-          '.write': "root.child('users').child(auth.uid).child('isAdmin').val() === true"
-        },
-        "queue":{
-            "tasks":{
-                ".read": true,
-                ".write": "auth !== null" //"auth !== null"
-            }
-        },
-        "classMentors":{
-            "userProfiles":{
-                ".read": true,
-                ".write": "root.child('auth').child('users').child(auth.uid).child('isAdmin').val() === true"
-            },
-            "userAchievements":{
-                ".read": true,
-                ".write": "root.child('auth').child('users').child(auth.uid).child('isAdmin').val() === true"
-            }
-        }
-      }
     });
 
-  });
+    describe('Unauthorized users', function () {
+        it('can read classMentors/userAchievements', function () {
+            expect(targaryen.users.unauthenticated)
+                .can.read.path("classMentors/userAchievements");
+        });
+        it('can read classMentors/userProfiles', function () {
+            expect(targaryen.users.unauthenticated)
+                .can.read.path("classMentors/userProfiles");
+        });
+        it('can not read logs', function () {
+            expect(targaryen.users.unauthenticated)
+                .cannot.read.path("logs");
+        });
+        it('can read queue/tasks', function () {
+            expect(targaryen.users.unauthenticated)
+                .can.read.path("queue/tasks");
+        });
+        it('can not read auth', function () {
+            expect(targaryen.users.unauthenticated)
+                .cannot.read.path("auth");
+        });
+        // TODO: Secure workers with API key in the future. 
+        it('can write queue/tasks', function () {
+            expect(targaryen.users.unauthenticated)
+                .can.write.path("queue/tasks");
+        });
+        it('can write logs', function () {
+            expect(targaryen.users.unauthenticated)
+                .can.write.path("logs");
+        });
+        
+    });
 
-  it('can be tested', function() {
+    describe('Authorized users', function () {
+       var anyUser = { uid: 'github:1234' };
+       
+       it('can read logs', function () {
+          expect(anyUser).can.read.path("logs"); 
+        });         
+    }); 
     
-    //everyone can read achievements
-    expect(targaryen.users.unauthenticated)
-    .can.read.path( "classMentors/userAchievements/kaplejon/services/codeCombat/totalAchievements");
-   
-    expect(targaryen.users.authenticated)
-    .can.read.path( "classMentors/userAchievements/kaplejon/services/codeCombat/totalAchievements");
-   
-    // admin can write to userAchievements   
-    expect({ uid: 'github:116418' })
-    .can.write.path( "classMentors/userAchievements/kaplejon/services/codeCombat/totalAchievements");
-    
-    //non-authenticated can not write to userAchievements
-    expect(targaryen.users.unauthenticated)
-    .cannot.write.path( "classMentors/userAchievements/kaplejon/services/codeCombat/totalAchievements");
-    
-    //non-admin can not write to userAchievements
-    expect({ uid: 'github:111111' })
-    .cannot.write.path( "classMentors/userAchievements/kaplejon/services/codeCombat/totalAchievements");
-
-    //unauthenticated can read to userProfiles  
-    expect(targaryen.users.unauthenticated)
-    .can.read.path( "classMentors/userProfiles/kaplejon/services/codeCombat/details/id");
-   
-    expect(targaryen.users.authenticated)
-    .can.read.path( "classMentors/userProfiles/kaplejon/services/codeCombat/details/id");
-    
-      
-    // admin can write to userProfiles   
-    expect({ uid: 'github:116418' })
-    .can.write.path( "classMentors/userProfiles/kaplejon/services/codeCombat/details/id");
-    
-    //unauthenticated can not write to userProfiles   
-    expect(targaryen.users.unauthenticated)
-    .cannot.write.path( "classMentors/userProfiles/kaplejon/services/codeCombat/details/id");
-    
-    //users cannot write to other's userProfiles   
-    expect({ uid: 'github:111111' })
-    .cannot.write.path( "classMentors/userProfiles/kaplejon/services/codeCombat/details/id");
-    
-    // Unauthorized users can not enqueue a task. 
-    expect(targaryen.users.unauthenticated)
-    .cannot.write.path( "queue/tasks");
-    
-    // Any authorized user can enqueue a task. 
-    expect({ uid: 'github:111111' })
-    .can.write.path( "queue/tasks");
-    
-    //Save users to auth/users rather than root/users. 
-  });
+    describe('Specific users', function () {
+       var theUser = { uid: 'github:1234' };
+       
+       it('cannot read auth/users', function () {
+          expect(theUser).cannot.read.path("auth/users"); 
+        });
+       it('can read their auth/users/$auth.uid', function () {
+          expect(theUser).can.read.path("auth/users/github:1234"); 
+        });
+        it("cannot read another users' auth/users/$auth.uid", function () {
+          expect(theUser).cannot.read.path("auth/users/github:5678"); 
+        });
+        
+        var data = {'id':'123', 'fullName':'Chris', 'displayName':'Chris', 'email':'chris@home.com', 'gravatar':'http:\\home.com', 'createdAt':12345678}
+        it('can write their auth/users/$auth.uid', function () {
+          expect(theUser).can.write(data).path("auth/users/github:1234"); 
+        });
+        it("cannot write another users' auth/users/$auth.uid", function () {
+          expect(theUser).cannot.write(data).path("auth/users/github:5678"); 
+        });
+        //Write your own authuser by no one elses
+         
+    });     
+ 
 
 });
