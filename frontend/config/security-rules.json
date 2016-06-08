@@ -8,6 +8,7 @@
       }, 
       "usedPublicIds": {
         "$publicId": {
+          ".validate": "newData.isBoolean() && newData.val() == (newData.parent().parent().parent().child('auth').child('publicIds').child($publicId).val() != null)", 
           ".write": "newData.val() != null"
         }, 
         ".read": "true"
@@ -43,7 +44,7 @@
     "classMentors":{
             "userAchievements":{
                 ".read":true,
-                ".write":true
+                ".write": "auth.uid == 'queue-worker'"
             },
             "userProfiles":{
                 ".read":true,
